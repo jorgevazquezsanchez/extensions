@@ -1,40 +1,42 @@
 <!doctype html>
 <head>
-  <link rel="stylesheet" type="text/css" href="https://contentful.github.io/ui-extensions-sdk/cf-extension.css">
-  <script src="https://unpkg.com/contentful-ui-extensions-sdk@3"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.6/zepto.js"></script>
-  <style>
-    body { margin: 0; }
-  </style>
+    <link rel="stylesheet" type="text/css" href="https://contentful.github.io/ui-extensions-sdk/cf-extension.css">
+    <script src="https://unpkg.com/contentful-ui-extensions-sdk@3"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.6/zepto.js"></script>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
 </head>
 
 <p>
-  Video ID <code></code> <button>✖</button>
+    Video ID <code></code>
+    <button>✖</button>
 </p>
 <input class="form-control" size="50" placeholder="Paste in a Youtube URL">
 
 <script>
-var cfExt = window.contentfulExtension || window.contentfulWidget
+  window.contentfulExtension.init(function(api) {
+    let $code = $('code');
 
-cfExt.init(function (api) {
-  var $code = $('code')
+    api.field.onValueChanged(function(value) {
+      $code.text(value || '');
+    });
 
-  api.field.onValueChanged(function (value) {
-    $code.text(value || '')
-  })
+    $('button').on('click', function() {
+      $code.text('');
+      api.field.setValue(null);
+    });
 
-  $('button').on('click', function () {
-    $code.text('')
-    api.field.setValue(null)
-  })
+    $('input').on('input', function(ev) {
+      let match = ev.target.value.match(/youtube\.com\/watch\?v=([\w_-]+)/);
 
-  $('input').on('input', function (ev) {
-    var match = ev.target.value.match(/youtube\.com\/watch\?v=([\w_-]+)/)
+      if (match) {
+        api.field.setValue(match[1]);
+        $code.text(match[1]);
+      }
+    });
 
-    if (match) {
-      api.field.setValue(match[1])
-      $code.text(match[1])
-    }
-  })
-})
+  });
 </script>
